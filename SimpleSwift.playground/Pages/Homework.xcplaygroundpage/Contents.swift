@@ -27,12 +27,50 @@ print("Welcome to the UW Calculator Playground")
 //: For this latter set of operations, it is safe to assume that `["count"]` (with no additional arguments) is 0, `["avg"]` is also 0, and `["fact"]` is 0. `["1", "fact"]` should return 1, and `["0", "fact"]` should also return 1. (Yes, 0-factorial is 1. True story.)
 //: 
 func calculate(_ args: [String]) -> Int {
-    return -1
+    
+    let last = args.last
+    let numbers = args.dropLast().compactMap {Int($0)}
+    
+    switch last {
+    case "count":
+        return numbers.count
+    case "avg":
+        // Should contain at least 1 number
+        // Default case = 0
+        guard numbers.count >= 1 else { return 0 }
+        let total = numbers.reduce(0, +)
+        return total / numbers.count
+    case "fact":
+        // Should only contain 1 number.
+        // The number should be at least 0
+        guard numbers.count == 1, let n = numbers.first, n >= 0 else {
+            return 0
+        }
+        if n == 0 { return 1 } // edge case of 0 factorial
+        return (1...n).reduce(1, *)
+    default:
+        if args.count == 3,
+           let left = Int(args[0]),
+           let right = Int(args[2]) {
+            
+            switch args[1] {
+            case "+": return left + right
+            case "-": return left - right
+            case "*": return left * right
+            case "/": return right != 0 ? left / right : -1
+            case "%": return right != 0 ? left % right : -1
+            default: return -1
+            }
+        }
+        return -1
+    }
 }
 
 func calculate(_ arg: String) -> Int {
-    return -1
+    let arr = arg.split(separator: " ").map{ String($0)}
+    return calculate(arr)
 }
+
 
 //: Below this are the test expressions/calls to verify if your code is correct.
 //:
@@ -85,7 +123,7 @@ calculate("5 fact") == 120
 //: Implement `calculate([String])` and `calculate(String)` to handle negative numbers. You need only make the tests below pass. (You do not need to worry about "fact"/factorial with negative numbers, for example.)
 //:
 //: This is worth 1 pt
-/*
+
 calculate(["2", "+", "-2"]) == 0
 calculate(["2", "-", "-2"]) == 4
 calculate(["2", "*", "-2"]) == -4
@@ -100,7 +138,7 @@ calculate("2 - -2") == 4
 calculate("-2 / 2") == -1
 
 calculate("1 -2 3 -4 5 count") == 5
-*/
+
  
 //: Implement `calculate([String])` and `calculate(String)` to use 
 //: and return floating-point values. You need only make the tests 
@@ -112,12 +150,40 @@ calculate("1 -2 3 -4 5 count") == 5
 //: Integer-based versions above.
 //: 
 //: This is worth 1 pt
-/*
+
 func calculate(_ args: [String]) -> Double {
-    return -1.0
+    let last = args.last
+    let numbers = args.dropLast().compactMap {Double($0)}
+    
+    switch last {
+    case "count":
+        return Double(numbers.count)
+    case "avg":
+        // Should contain at least 1 number
+        // Default case = 0
+        guard numbers.count >= 1 else { return 0 }
+        let total = numbers.reduce(0, +)
+        return total / Double(numbers.count)
+    default:
+        if args.count == 3,
+           let left = Double(args[0]),
+           let right = Double(args[2]) {
+            
+            switch args[1] {
+            case "+": return left + right
+            case "-": return left - right
+            case "*": return left * right
+            case "/": return right != 0 ? left / right : -1
+            case "%": return right != 0 ? left.truncatingRemainder(dividingBy: right) : -1
+            default: return -1.0
+            }
+        }
+        return -1.0
+    }
 }
 func calculate(_ arg: String) -> Double {
-    return -1.0
+    let arr = arg.split(separator: " ").map{ String($0)}
+    return calculate(arr)
 }
 
 calculate(["2.0", "+", "2.0"]) == 4.0
@@ -127,4 +193,4 @@ calculate(["2.5", "*", "2.5"]) == 6.25
 calculate(["2.0", "/", "2.0"]) == 1.0
 calculate(["2.0", "%", "2.0"]) == 0.0
 calculate("1.0 2.0 3.0 4.0 5.0 count") == 5.0
-*/
+
